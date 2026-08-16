@@ -5,7 +5,7 @@ from app.core.config import settings
 
 password_hash = PasswordHash.recommended()
 
-def hash_password(password: str):
+def hashed_password(password: str):
     return password_hash.hash(password)
 
 def verify_password(password: str, h_password: str):
