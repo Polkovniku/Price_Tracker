@@ -72,7 +72,7 @@ class ProductService:
             .where(TrackedProduct.user_id == user_id)
         )
         if not tracked:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product is not found")
         try:
             await self.db.delete(tracked)
             await self.db.commit()
@@ -82,3 +82,13 @@ class ProductService:
         
     async def search_products(self, text: str, page):
         return await search_rozetka(text, page)
+    
+    async def get_price_history(self, product_id: UUID, user_id: UUID) -> list[PriceHistory]:
+        product = await self.get_product_by_id(product_id, user_id)
+        if not product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product is not found")
+        return (await self.db.scalars(
+            select(PriceHistory)
+            .where(PriceHistory.product_id == product_id)
+            .order_by(PriceHistory.recorded_at)
+        )).all()

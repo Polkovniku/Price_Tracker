@@ -57,6 +57,16 @@ services:
       redis:
         condition: service_started
   
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: booking_nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+  
   
 volumes:
   postgres_data:

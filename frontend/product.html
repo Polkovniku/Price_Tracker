@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товар — PriceTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .product-detail {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .product-detail img {
+            width: 100%;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            padding: 16px;
+            object-fit: contain;
+        }
+
+        .product-detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-detail-info .brand {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .product-detail-info h1 {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .product-detail-info .price {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .product-detail-info .meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .product-detail-info .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .chart-section {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .chart-section h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">Price Tracker</a>
+        <ul class="nav-links">
+            <li><a href="search.html">Додати товар</a></li>
+            <li><a href="tracked.html" class="active">Мої товари</a></li>
+            <li><a href="#" id="logoutBtn">Вийти</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div id="content">
+            <div class="loading">Завантажуємо...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        requireAuth();
+
+        document.getElementById("logoutBtn").addEventListener("click", (e) => {
+            e.preventDefault();
+            logout();
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
+
+        if (!productId) window.location.href = "tracked.html";
+
+        async function loadProduct() {
+            const content = document.getElementById("content");
+            try {
+                await ensureAuth();
+                const [product, history] = await Promise.all([
+                    getProduct(productId),
+                    getPriceHistory(productId),
+                ]);
+
+                content.innerHTML = `
+                    <div class="product-detail">
+                        <img src="${product.image_url || ''}" alt="${product.title}" onerror="this.style.display='none'">
+                        <div class="product-detail-info">
+                            <div class="brand">${product.brand || ''}</div>
+                            <h1>${product.title}</h1>
+                            <div class="price">${Number(product.price).toLocaleString()} ₴</div>
+                            <div class="meta">Доданий: ${new Date(product.created_at).toLocaleDateString('uk-UA')}</div>
+                            <div class="actions">
+                                <a href="${product.href}" target="_blank" class="btn btn-outline btn-sm">
+                                    Відкрити на Rozetka ↗
+                                </a>
+                                <button class="btn btn-danger btn-sm" id="removeBtn">
+                                    Видалити з відстежуваних
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h2>Історія цін</h2>
+                        ${history && history.length > 0
+                            ? '<canvas id="priceChart"></canvas>'
+                            : '<p style="color: var(--text-muted); font-size: 14px;">Недостатньо даних для графіка</p>'
+                        }
+                    </div>
+                `;
+
+                document.getElementById("removeBtn").addEventListener("click", async (e) => {
+                    e.target.disabled = true;
+                    try {
+                        await ensureAuth();
+                        await deleteProduct(productId);
+                        window.location.href = "tracked.html";
+                    } catch {
+                        e.target.disabled = false;
+                    }
+                });
+
+                if (history && history.length > 0) {
+                    setTimeout(() => renderChart(history), 0);
+                }
+
+            } catch (e) {
+                content.innerHTML = `<div class="empty-state"><p>Помилка завантаження: ${e.message}</p></div>`;
+            }
+        }
+
+        function renderChart(history) {
+            const labels = history.map(h =>
+                new Date(h.recorded_at).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' })
+            );
+            const prices = history.map(h => Number(h.price));
+
+            const ctx = document.getElementById("priceChart").getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "Ціна (₴)",
+                        data: prices,
+                        borderColor: "#4a7c59",
+                        backgroundColor: "rgba(74, 124, 89, 0.08)",
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: "#4a7c59",
+                        tension: 0.3,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.parsed.y.toLocaleString()} ₴`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: v => `${v.toLocaleString()} ₴`
+                            },
+                            grid: { color: "#f0f0f0" }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        loadProduct();
+    </script>
+</body>
+</html>

@@ -7,6 +7,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.users import User
 from fastapi import Request
+from app.schemas.price_history import PriceHistoryResponse
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -52,3 +53,11 @@ async def delete_product(
     product_service: Annotated[ProductService, Depends(get_product_service)]
 ):
     return await product_service.remove_product(product_id, user.id)
+
+@router.get("/{product_id}/history", response_model=list[PriceHistoryResponse])
+async def get_price_history(
+    product_id: UUID,
+    user: Annotated[User, Depends(get_current_user)],
+    product_service: Annotated[ProductService, Depends(get_product_service)]
+):
+    return await product_service.get_price_history(product_id, user.id)
