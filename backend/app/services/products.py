@@ -5,9 +5,10 @@ from sqlalchemy import select
 from app.services.scraper import extract_rozetka_id, fetch_product, search_rozetka
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+from app.models.price_history import PriceHistory
 
 class ProductService:
-    def __int__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession):
         self.db = db
         
     async def get_product_by_id(self, product_id: UUID, user_id: UUID) -> Product | None:
@@ -42,6 +43,9 @@ class ProductService:
             )
             self.db.add(product)
             await self.db.flush()
+            
+            price_history = PriceHistory(product_id=product.id, price=product.price)
+            self.db.add(price_history)
             
         existing = await self.db.scalar(
             select(TrackedProduct)
