@@ -52,8 +52,8 @@ class AuthService:
         if not user_id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
         
-        service = UserService(self.db)
-        user = await service.get_user_by_id(UUID(user_id))
+        user_service = UserService(self.db)
+        user = await user_service.get_user_by_id(UUID(user_id))
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User is not found")
         payload = {"sub": str(user.id)}
