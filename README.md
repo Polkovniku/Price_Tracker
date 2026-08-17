@@ -133,3 +133,18 @@ price_tracker/
 6. Користувач бачить графік зміни цін на сторінці товару
 
 ## Приклад роботи
+
+### Пошук товару
+
+<img width="1919" height="910" alt="Снимок экрана 2026-08-17 160403" src="https://github.com/user-attachments/assets/d8a787fa-9e21-4fe6-b79e-5aca6dd51881" />
+
+### Перегляд відстежуваних товарів
+
+<img width="1857" height="853" alt="Снимок экрана 2026-08-17 162514" src="https://github.com/user-attachments/assets/aae4202c-d0d7-4291-9f91-d884d9f64775" />
+
+### Детальна інформація з исторією цін
+
+<img width="1897" height="908" alt="Снимок экрана 2026-08-17 162530" src="https://github.com/user-attachments/assets/9cb73f00-35c6-4fa2-87ba-147101ad922d" />
+
+
+
