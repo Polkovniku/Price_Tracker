@@ -8,7 +8,9 @@
 
 ## Деплой
 
-Сервіс розмещенний на VPS та доступний за посиланням https://pricetracker.pp.ua/ , також  документація Swagger за https://pricetracker.pp.ua//docs
+Сервіс розмещенний на VPS та доступний за посиланням https://pricetracker.pp.ua/ , також  документація Swagger за https://pricetracker.pp.ua//docs (user@gmail.com, userpassword)
+
+
 
 ---
 
