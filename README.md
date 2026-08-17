@@ -134,7 +134,7 @@ price_tracker/
 
 ## Приклад роботи
 
-### Пошук товару
+### Пошук товару по назві, або за прямим посиланням
 
 <img width="1919" height="910" alt="Снимок экрана 2026-08-17 160403" src="https://github.com/user-attachments/assets/d8a787fa-9e21-4fe6-b79e-5aca6dd51881" />
 
