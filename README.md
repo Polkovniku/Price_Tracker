@@ -52,7 +52,7 @@ git clone https://github.com/Polkovniku/Price_Tracker.git
 cd Price_Tracker
 ```
 
-### 2. Створити `.env` файл
+### 2. Створити `.env` файл в backend директорії
 
 Заповнити змінні:
 
