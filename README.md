@@ -1,20 +1,20 @@
 # Price Tracker 🔍
 
-Веб-сервіс для моніторингу цін на товари з маркетплейсу Rozetka.
+Web service for monitoring product prices on the Rozetka marketplace.
 
-Користувач додає товари, які хоче відстежувати - за посиланням або через пошук.
-Сервіс автоматично перевіряє ціни раз на добу та зберігає історію змін.
-На сторінці кожного товару відображається графік зміни ціни за весь час відстеження.
+Users add products they want to track by link or through search.
+The service automatically checks prices once a day and stores the change history.
+Each product page shows a price chart for the full tracking period.
 
-## Деплой
+## Deployment
 
-Сервіс розмещенний на VPS та доступний за посиланням https://pricetracker.pp.ua/ , також  документація Swagger за https://pricetracker.pp.ua//docs (user@gmail.com, userpassword)
+The service is deployed on a VPS and available at https://pricetracker.pp.ua/. Swagger documentation is available at https://pricetracker.pp.ua//docs (user@gmail.com, userpassword)
 
 
 
 ---
 
-## Стек технологій
+## Tech Stack
 
 **Backend**
 - Python 3.12
@@ -22,9 +22,9 @@
 - SQLAlchemy (async) + asyncpg
 - PostgreSQL
 - Alembic
-- Celery + Redis (Celery Beat для періодичних задач)
+- Celery + Redis (Celery Beat for periodic jobs)
 - Camoufox 
-- JWT аутентификация (access + refresh токени)
+- JWT authentication (access + refresh tokens)
 - Docker + Docker Compose
 
 **Frontend**
@@ -33,34 +33,34 @@
 
 ---
 
-## Функціональність
+## Features
 
-- Реєстрація та авторизація користувачів
-- Пошук товарів на Rozetka за назвою
-- Додавання товару за посиланням з Rozetka
-- Список товарів, що відстежуються
-- Детальна сторінка товару з графіком історії цін
-- Автоматична перевірка цін щодня через Celery Beat
-- При зміні ціни – збереження в історію
+- User registration and authentication
+- Product search on Rozetka by name
+- Add a product from a Rozetka link
+- List of tracked products
+- Product detail page with a price history chart
+- Automatic daily price checks via Celery Beat
+- Save price changes to history
 
 ---
 
-## Запуск
+## Run
 
-### Вимоги
+### Requirements
 - Docker
 - Docker Compose
 
-### 1. Клонувати репозиторій
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Polkovniku/Price_Tracker.git
 cd Price_Tracker
 ```
 
-### 2. Створити `.env` файл в backend директорії
+### 2. Create a `.env` file in the backend directory
 
-Заповнити змінні:
+Set the variables:
 
 ```env
 POSTGRES_DB=price_tracker_db
@@ -71,40 +71,40 @@ DB_PORT=5432
 SECRET_KEY=your_secret_key
 ```
 
-Згенерувати `SECRET_KEY`:
+Generate a `SECRET_KEY`:
 
 ```bash
 openssl rand -hex 32
 ```
 
-### 3. Запустити
+### 3. Start the app
 
 ```bash
 docker compose up --build -d
 ```
 
-### 4. Відкрити у браузері
+### 4. Open in the browser
 
 ```
 http://localhost
 ```
 
-API документація Swagger: `http://localhost/docs`
+Swagger API docs: `http://localhost/docs`
 
 ---
 
-## Структура проекту
+## Project Structure
 
 ```
 price_tracker/
 ├── backend/
 │   ├── app/
 │   │   ├── core/          # config, database, security
-│   │   ├── models/        # SQLAlchemy моделі
-│   │   ├── routers/       # FastAPI роутери
-│   │   ├── schemas/       # Pydantic схеми
-│   │   ├── services/      # бізнес-логіка + scraper
-│   │   └── tasks/         # Celery таски
+│   │   ├── models/        # SQLAlchemy models
+│   │   ├── routers/       # FastAPI routers
+│   │   ├── schemas/       # Pydantic schemas
+│   │   ├── services/      # business logic + scraper
+│   │   └── tasks/         # Celery tasks
 │   ├── alembic/
 │   ├── Dockerfile
 │   └── pyproject.toml
@@ -125,28 +125,27 @@ price_tracker/
 
 ---
 
-## Як це працює
+## How It Works
 
-1. Користувач додає товар за посиланням або через пошук
-2. Сервіс парсить дані з Розетки через Camoufox
-3. Товар зберігається у БД із початковою ціною
-4. Celery Beat кожні 24 години перевіряє актуальні ціни
-5. При зміні ціни - запис зберігається в `PriceHistory`
-6. Користувач бачить графік зміни цін на сторінці товару
+1. The user adds a product by link or through search
+2. The service parses data from Rozetka via Camoufox
+3. The product is saved to the database with its initial price
+4. Celery Beat checks current prices every 24 hours
+5. When the price changes, the record is saved in `PriceHistory`
+6. The user sees a price change chart on the product page
 
-## Приклад роботи
+## Example
 
-### Пошук товару по назві, або за прямим посиланням
+### Search by name or direct link
 
 <img width="1919" height="910" alt="Снимок экрана 2026-08-17 160403" src="https://github.com/user-attachments/assets/d8a787fa-9e21-4fe6-b79e-5aca6dd51881" />
 
-### Перегляд відстежуваних товарів
+### View tracked products
 
 <img width="1857" height="853" alt="Снимок экрана 2026-08-17 162514" src="https://github.com/user-attachments/assets/aae4202c-d0d7-4291-9f91-d884d9f64775" />
 
-### Детальна інформація з исторією цін
+### Product details with price history
 
 <img width="1897" height="908" alt="Снимок экрана 2026-08-17 162530" src="https://github.com/user-attachments/assets/9cb73f00-35c6-4fa2-87ba-147101ad922d" />
-
 
 
