@@ -60,6 +60,29 @@ nav .nav-links a.active {
     color: var(--text);
 }
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lang-switch {
+    appearance: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.lang-switch:focus {
+    outline: 2px solid rgba(74, 124, 89, 0.18);
+    outline-offset: 2px;
+}
+
 .container {
     max-width: 960px;
     margin: 0 auto;
@@ -174,6 +197,12 @@ nav .nav-links a.active {
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
     padding: 40px 32px;
+}
+
+.auth-card-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
 }
  
 .auth-card h1 {

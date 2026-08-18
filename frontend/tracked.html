@@ -1,36 +1,50 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мої товари — PriceTracker</title>
+    <title>My products — PriceTracker</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <nav>
-        <a class="logo" href="index.html">Price Tracker</a>
-        <ul class="nav-links">
-            <li><a href="search.html">Додати товар</a></li>
-            <li><a href="tracked.html" class="active">Мої товари</a></li>
-            <li><a href="#" id="logoutBtn">Вийти</a></li>
-        </ul>
+        <a class="logo" href="index.html" data-i18n="app.name">Price Tracker</a>
+        <div class="nav-actions">
+            <select class="lang-switch" data-lang-switch aria-label="Language switcher">
+                <option value="en">English</option>
+                <option value="uk">Українська</option>
+            </select>
+            <ul class="nav-links">
+                <li><a href="search.html" data-i18n="nav.addProduct">Add product</a></li>
+                <li><a href="tracked.html" class="active" data-i18n="nav.tracked">Tracked items</a></li>
+                <li><a href="#" id="logoutBtn" data-i18n="nav.logout">Log out</a></li>
+            </ul>
+        </div>
     </nav>
 
     <div class="container">
         <div class="page-header">
-            <h1>Мої товари</h1>
-            <p>Товари, які ви відстежуєте</p>
+            <h1 data-i18n="tracked.title">My products</h1>
+            <p data-i18n="tracked.subtitle">Products you are tracking</p>
         </div>
 
         <div id="content">
-            <div class="loading">Завантажуємо...</div>
+            <div class="loading" data-i18n="tracked.loading">Loading...</div>
         </div>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
         requireAuth();
+
+        const syncTitle = () => {
+            document.title = t("tracked.title");
+        };
+
+        syncTitle();
+        window.addEventListener("languagechange", syncTitle);
 
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
@@ -47,8 +61,8 @@
                     content.innerHTML = `
                         <div class="empty-state">
                             <div style="font-size: 40px">📦</div>
-                            <p>Ви ще не відстежуєте жодного товару</p>
-                            <a href="search.html" class="btn btn-primary" style="margin-top: 16px">Знайти товар</a>
+                            <p>${t("tracked.empty")}</p>
+                            <a href="search.html" class="btn btn-primary" style="margin-top: 16px">${t("tracked.findButton")}</a>
                         </div>`;
                     return;
                 }
@@ -63,17 +77,17 @@
                         </div>
                         <div class="product-actions" style="display: flex; gap: 8px;">
                             <a href="product.html?id=${p.id}" class="btn btn-outline btn-sm" style="flex: 1; text-align: center;">
-                                Докладніше
+                                ${t("tracked.details")}
                             </a>
                             <button class="btn btn-danger btn-sm" onclick="removeProduct('${p.id}', this)">
-                                ✕
+                                ${t("tracked.remove")}
                             </button>
                         </div>
                     </div>
                 `).join('')}</div>`;
 
             } catch (e) {
-                content.innerHTML = `<div class="empty-state"><p>Помилка завантаження: ${e.message}</p></div>`;
+                content.innerHTML = `<div class="empty-state"><p>${t("product.error")}: ${e.message}</p></div>`;
             }
         }
 
@@ -89,6 +103,10 @@
         }
 
         loadProducts();
+
+        window.addEventListener("languagechange", () => {
+            loadProducts();
+        });
     </script>
 </body>
 </html>

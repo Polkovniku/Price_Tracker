@@ -1,40 +1,54 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Увійти — PriceTracker</title>
+    <title>Sign in — PriceTracker</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="auth-wrapper">
         <div class="auth-card">
-            <h1>Price Tracker</h1>
-            <p>Увійдіть до свого облікового запису</p>
+            <div class="auth-card-header">
+                <select class="lang-switch" data-lang-switch aria-label="Language switcher">
+                    <option value="en">English</option>
+                    <option value="uk">Українська</option>
+                </select>
+            </div>
+            <h1 data-i18n="auth.login.title">Sign in</h1>
+            <p data-i18n="auth.login.subtitle">Sign in to your account</p>
 
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email" placeholder="you@example.com">
+                <label data-i18n="auth.login.email">Email</label>
+                <input type="email" id="email" placeholder="you@example.com" data-i18n-placeholder="auth.login.emailPlaceholder">
             </div>
             <div class="form-group">
-                <label>Пароль</label>
-                <input type="password" id="password" placeholder="••••••">
+                <label data-i18n="auth.login.password">Password</label>
+                <input type="password" id="password" placeholder="••••••" data-i18n-placeholder="auth.login.passwordPlaceholder">
             </div>
 
             <p class="error-msg" id="error"></p>
 
-            <button class="btn btn-primary" id="loginBtn">Увійти</button>
+            <button class="btn btn-primary" id="loginBtn" data-i18n="auth.login.button">Sign in</button>
 
             <div class="auth-footer">
-                Немає облікового запису? <a href="register.html">Зареєструватись</a>
+                <span data-i18n="auth.login.noAccount">No account?</span> <a href="register.html" data-i18n="auth.login.registerLink">Sign up</a>
             </div>
         </div>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
         if (isLoggedIn()) window.location.href = "index.html";
+
+        const syncTitle = () => {
+            document.title = t("auth.login.title") + " — PriceTracker";
+        };
+
+        syncTitle();
+        window.addEventListener("languagechange", syncTitle);
 
         document.getElementById("loginBtn").addEventListener("click", async () => {
             const email = document.getElementById("email").value.trim();
@@ -44,7 +58,7 @@
 
             error.style.display = "none";
             btn.disabled = true;
-            btn.textContent = "Входимо...";
+            btn.textContent = t("auth.login.loading");
 
             try {
                 const data = await login(email, password);
@@ -55,7 +69,7 @@
                 error.style.display = "block";
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Увійти";
+                btn.textContent = t("auth.login.button");
             }
         });
 

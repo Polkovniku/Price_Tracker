@@ -1,40 +1,46 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Додати товар — PriceTracker</title>
+    <title>Add product — PriceTracker</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <nav>
-        <a class="logo" href="index.html">Price Tracker</a>
-        <ul class="nav-links">
-            <li><a href="search.html" class="active">Додати товар</a></li>
-            <li><a href="tracked.html">Мої товари</a></li>
-            <li><a href="#" id="logoutBtn">Вийти</a></li>
-        </ul>
+        <a class="logo" href="index.html" data-i18n="app.name">Price Tracker</a>
+        <div class="nav-actions">
+            <select class="lang-switch" data-lang-switch aria-label="Language switcher">
+                <option value="en">English</option>
+                <option value="uk">Українська</option>
+            </select>
+            <ul class="nav-links">
+                <li><a href="search.html" class="active" data-i18n="nav.addProduct">Add product</a></li>
+                <li><a href="tracked.html" data-i18n="nav.tracked">Tracked items</a></li>
+                <li><a href="#" id="logoutBtn" data-i18n="nav.logout">Log out</a></li>
+            </ul>
+        </div>
     </nav>
 
     <div class="container">
         <div class="page-header">
-            <h1>Додати товар</h1>
-            <p>Знайдіть товар за назвою або вставте посилання з Розетки</p>
+            <h1 data-i18n="search.title">Add product</h1>
+            <p data-i18n="search.subtitle">Find a product by name or paste a Rozetka link</p>
         </div>
 
         <div class="tabs">
-            <button class="tab active" id="tabSearch">Пошук за назвою</button>
-            <button class="tab" id="tabLink">За посиланням</button>
+            <button class="tab active" id="tabSearch" data-i18n="search.tab.search">Search by name</button>
+            <button class="tab" id="tabLink" data-i18n="search.tab.link">By link</button>
         </div>
 
         
         <div id="panelSearch">
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Наприклад: Playstation">
-                <button class="btn btn-primary" id="searchBtn">Знайти</button>
+                <input type="text" id="searchInput" placeholder="For example: Playstation" data-i18n-placeholder="search.search.placeholder">
+                <button class="btn btn-primary" id="searchBtn" data-i18n="search.search.button">Search</button>
             </div>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
-                Якщо товар не знайдено, додайте його за прямим посиланням з Rozetka
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px;" data-i18n="search.search.help">
+                If the product is not found, add it by a direct Rozetka link
             </p>
             <p class="error-msg" id="searchError"></p>
             <div id="searchResults"></div>
@@ -43,18 +49,26 @@
         
         <div id="panelLink" style="display: none;">
             <div class="search-bar">
-                <input type="text" id="linkInput" placeholder="https://rozetka.com.ua/ua/.../p123456/">
-                <button class="btn btn-primary" id="addByLinkBtn">Додати</button>
+                <input type="text" id="linkInput" placeholder="https://rozetka.com.ua/ua/.../p123456/" data-i18n-placeholder="search.link.placeholder">
+                <button class="btn btn-primary" id="addByLinkBtn" data-i18n="search.link.button">Add</button>
             </div>
             <p class="error-msg" id="linkError"></p>
             <p id="linkSuccess" style="display:none; color: var(--primary); font-size: 14px; margin-top: 8px;"></p>
         </div>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
         requireAuth();
+
+        const syncTitle = () => {
+            document.title = t("search.title");
+        };
+
+        syncTitle();
+        window.addEventListener("languagechange", syncTitle);
 
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
@@ -89,7 +103,7 @@
             if (!text) return;
 
             error.style.display = "none";
-            results.innerHTML = '<div class="loading">Шукаємо товари...</div>';
+            results.innerHTML = `<div class="loading">${t("search.loading")}</div>`;
             btn.disabled = true;
 
             try {
@@ -111,7 +125,7 @@
 
         function renderSearchResults(products, container) {
             if (!products || products.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Нічого не знайдено</p></div>';
+                container.innerHTML = `<div class="empty-state"><p>${t("search.noResults")}</p></div>`;
                 return;
             }
 
@@ -125,7 +139,7 @@
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-primary btn-sm" style="width:100%" onclick="addByHref('${p.href}', this)">
-                            Слідкувати
+                            ${t("search.follow")}
                         </button>
                     </div>
                 </div>
@@ -134,14 +148,14 @@
 
         async function addByHref(href, btn) {
             btn.disabled = true;
-            btn.textContent = "Додаємо...";
+            btn.textContent = t("search.adding");
             try {
                 await ensureAuth();
                 await addProduct(href);
-                btn.textContent = "✓ Додано";
+                btn.textContent = `✓ ${t("search.added")}`;
                 btn.style.background = "#6b7280";
             } catch (e) {
-                btn.textContent = e.message === "Product already tracked" ? "Вже відстежується" : "Помилка";
+                btn.textContent = e.message === "Product already tracked" ? t("search.alreadyTracked") : t("search.error");
                 btn.disabled = false;
             }
         }
@@ -155,12 +169,12 @@
             error.style.display = "none";
             success.style.display = "none";
             btn.disabled = true;
-            btn.textContent = "Додаємо...";
+            btn.textContent = t("search.adding");
 
             try {
                 await ensureAuth();
                 await addProduct(href);
-                success.textContent = "✓ Товар доданий до відстежуваних";
+                success.textContent = `✓ ${t("search.link.success")}`;
                 success.style.display = "block";
                 document.getElementById("linkInput").value = "";
             } catch (e) {
@@ -168,7 +182,22 @@
                 error.style.display = "block";
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Додати";
+                btn.textContent = t("search.link.button");
+            }
+        });
+
+        window.addEventListener("languagechange", () => {
+            const results = document.getElementById("searchResults");
+            if (results.innerHTML) {
+                const current = results.querySelector(".product-grid");
+                if (current) {
+                    const text = document.getElementById("searchInput").value.trim();
+                    if (text) {
+                        searchProducts(text).then((data) => renderSearchResults(data, results)).catch(() => {});
+                    }
+                } else {
+                    results.innerHTML = `<div class="loading">${t("search.loading")}</div>`;
+                }
             }
         });
     </script>

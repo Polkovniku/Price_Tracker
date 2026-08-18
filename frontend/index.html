@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,36 +68,50 @@
 </head>
 <body>
     <nav>
-        <a class="logo" href="index.html">Price Tracker</a>
-        <ul class="nav-links">
-            <li><a href="search.html">Додати товар</a></li>
-            <li><a href="tracked.html">Мої товари</a></li>
-            <li><a href="#" id="logoutBtn">Вийти</a></li>
-        </ul>
+        <a class="logo" href="index.html" data-i18n="app.name">Price Tracker</a>
+        <div class="nav-actions">
+            <select class="lang-switch" data-lang-switch aria-label="Language switcher">
+                <option value="en">English</option>
+                <option value="uk">Українська</option>
+            </select>
+            <ul class="nav-links">
+                <li><a href="search.html" data-i18n="nav.addProduct">Add product</a></li>
+                <li><a href="tracked.html" data-i18n="nav.tracked">Tracked items</a></li>
+                <li><a href="#" id="logoutBtn" data-i18n="nav.logout">Log out</a></li>
+            </ul>
+        </div>
     </nav>
 
     <div class="hero">
-        <h1>Price Tracker</h1>
-        <p>Відстежуйте ціни на товари з Розетки та дізнавайтесь про зміни</p>
+        <h1 data-i18n="home.title">Price Tracker</h1>
+        <p data-i18n="home.description">Track prices on Rozetka and get notified when they change</p>
 
         <div class="actions">
             <a class="action-card" href="search.html">
                 <div class="icon">🔍</div>
-                <h2>Знайти товар</h2>
-                <p>Пошук за назвою або посиланням</p>
+                <h2 data-i18n="home.findProduct.title">Find product</h2>
+                <p data-i18n="home.findProduct.description">Search by name or link</p>
             </a>
             <a class="action-card" href="tracked.html">
                 <div class="icon">📦</div>
-                <h2>Мої товари</h2>
-                <p>Список товарів, що відстежуються</p>
+                <h2 data-i18n="home.myProducts.title">My products</h2>
+                <p data-i18n="home.myProducts.description">Your tracked list</p>
             </a>
         </div>
     </div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script>
         requireAuth();
+
+        const syncTitle = () => {
+            document.title = t("home.title");
+        };
+
+        syncTitle();
+        window.addEventListener("languagechange", syncTitle);
 
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
